@@ -112,8 +112,13 @@ cd gitnest
 **2. Set up environment variables**
 
 ```bash
+# Backend env variables
 cp backend/.env.example backend/.env
 # Open backend/.env and fill in your values
+
+# Frontend env variables
+cp frontend/.env.example frontend/.env
+# Open frontend/.env and fill in your values
 ```
 
 **3. Install dependencies and run**
