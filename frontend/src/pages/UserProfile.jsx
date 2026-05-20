@@ -40,6 +40,7 @@ const UserProfile = () => {
     year: 'numeric',
   });
 
+
   return (
     <div className="min-h-screen bg-white dark:bg-[#06070a] text-zinc-900 dark:text-white transition-colors">
       <div className="max-w-4xl mx-auto px-4 py-10">

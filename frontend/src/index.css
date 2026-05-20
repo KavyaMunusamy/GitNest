@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
+html{
+  scroll-behavior: smooth;
+}
 
 @layer base {
   body {
@@ -9,6 +12,7 @@
   
   html.dark body {
     @apply bg-zinc-950 text-white;
+    
   }
 }
 
@@ -29,4 +33,36 @@
 
 .animate-slide-in {
   animation: slide-in 0.2s ease-out both;
+}
+
+/* -- Transition to the HTML element -- */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 transparent; 
+  transition: scrollbar-color 0.3s ease; 
+}
+
+/* -- Custom Scrollbar -- */
+::-webkit-scrollbar {
+  width: 8px; 
+  height: 8px; 
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #10b981;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #059669;
+}
+
+/* -- Firefox -- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #10b981 transparent;
 }

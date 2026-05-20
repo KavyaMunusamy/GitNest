@@ -17,6 +17,7 @@ userApi.interceptors.request.use((config) => {
 export const fetchUserProfile = async (username) => {
   const { data } = await userApi.get(`/${username}`);
   return data.data;
+
 };
 
 export const followUser = async (username) => {

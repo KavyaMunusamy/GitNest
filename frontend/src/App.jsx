@@ -3,7 +3,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { useAuthStore } from './store/authStore';
 import { useThemeStore } from './store/useThemeStore';
 import { useEffect } from 'react';
-import ThemeToggle from './components/ThemeToggle';
 import ToastContainer from './components/ui/ToastContainer';
 import './App.css';
 import Login from './components/auth/Login';
@@ -13,7 +12,7 @@ import NotFound from './pages/NotFound';
 import PullRequestsPage from './pages/PullRequestsPage';
 import PullRequestDetailPage from './pages/PullRequestDetailPage';
 import UserProfile from './pages/UserProfile';
-
+import ActivityFeedPage from './pages/ActivityFeed.jsx';
 
 const Dashboard = () => {
   const { user, logout } = useAuthStore();
@@ -47,7 +46,7 @@ function App() {
     <div className="min-h-screen">
       <ToastContainer />
       <header className="p-4 flex justify-end border-b border-zinc-200 dark:border-zinc-800 transition-colors">
-        <ThemeToggle />
+      
       </header>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -55,6 +54,7 @@ function App() {
         <Route path="/" element={<GitNestHomepage />} />
         <Route path="/pull-requests" element={<PullRequestsPage />} />
         <Route path="/pull-requests/:id" element={<PullRequestDetailPage />} />
+        <Route path="/activities" element={<ActivityFeedPage />} />
         <Route path="/:username" element={<UserProfile />} />
 
         <Route element={<ProtectedRoute />}>
