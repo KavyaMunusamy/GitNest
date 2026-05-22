@@ -15,6 +15,7 @@ import PullRequestsPage from './pages/PullRequestsPage';
 import PullRequestDetailPage from './pages/PullRequestDetailPage';
 import UserProfile from './pages/UserProfile';
 import ActivityFeedPage from './pages/ActivityFeed.jsx';
+import ComponentShowcase from './pages/ComponentShowcase.jsx';
 
 const Dashboard = () => {
   const { user, logout } = useAuthStore();
@@ -57,6 +58,7 @@ function App() {
         <Route path="/pull-requests/:id" element={<PullRequestDetailPage />} />
         <Route path="/activities" element={<ActivityFeedPage />} />
         <Route path="/:username" element={<UserProfile />} />
+        <Route path="/showcase" element={<ComponentShowcase />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/dashboard" element={<Dashboard />} />
