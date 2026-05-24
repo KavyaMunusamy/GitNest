@@ -5,6 +5,7 @@ import AppError from '../utils/AppError.js';
 import { sendSuccess } from '../utils/responseHandlers.js';
 import { logActivity } from '../services/activity.service.js';
 import ACTIVITY_TYPES from '../constants/activityTypes.js';
+import paginate, {buildPaginationMeta } from '../utils/paginate.js';
 
 export const createRepository = asyncHandler(async (req, res, next)=> {
     const { name, description, visibility, language, topics } = req.body;
@@ -96,6 +97,29 @@ export const getUserRepositories = asyncHandler(async (req, res, next) => {
         .sort({ createdAt: -1 });
 
     sendSuccess(res, 200, repositories);
+  const { username } = req.params;
+  const { page, limit, skip } = paginate(req.query.page, req.query.limit);
+  const user = await User.findOne({ username: username.toLowerCase() });
+
+  if (!user) return next(new AppError('User not found', 404));
+
+  const filter = {
+    owner: user._id,
+    ...(req.user?.id !== user._id.toString() && { visibility: 'public' }),
+  };
+
+  const [repositories, totalCount] = await Promise.all([
+    Repository.find(filter)
+      .populate('owner', 'username avatarUrl')
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }),
+    Repository.countDocuments(filter),
+  ]);
+
+  const pagination = buildPaginationMeta(page, limit, totalCount);
+
+  sendSuccess(res, 200, { repositories, pagination });
 });
 
 export const updateRepository = asyncHandler(async(req, res, next) => {
