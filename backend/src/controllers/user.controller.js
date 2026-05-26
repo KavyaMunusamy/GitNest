@@ -52,6 +52,12 @@ export const followUser = asyncHandler(async (req, res, next) => {
       { _id: req.user._id, following: { $ne: target._id } },
       { $addToSet: { following: target._id } }
     );
+    
+    await User.findByIdAndUpdate(
+      req.user._id,
+      { $addToSet: { following: target._id } },
+      { session }
+    );
 
     if (selfResult.matchedCount === 0) {
       return next(new AppError('User not found', 404));
