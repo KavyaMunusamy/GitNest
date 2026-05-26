@@ -1,6 +1,6 @@
 import { createApiClient } from './createApiClient.js';
 
-const authApi = createApiClient();
+const authApi = createApiClient("/auth");
 
 export const registerUser = async (userData) => {
   const response = await authApi.post('/register', userData);
