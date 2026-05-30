@@ -21,6 +21,8 @@ import BackToTop from "./components/BackToTop/BackToTop";
 import GitNestTerms from "./pages/GitNestTerms.jsx";
 import RepositoryArchitecturePage from "./pages/repositories/RepositoryArchitecturePage.jsx";
 import OAuthSuccess from "./pages/OAuthSuccess.jsx";
+import ContactPage from "./pages/ContactPage";
+
 const Dashboard = () => {
   const { user, logout } = useAuthStore();
 
@@ -72,6 +74,7 @@ function App() {
           <Route path="/showcase" element={<ComponentShowcase />} />
           <Route path="/privacy" element={<GitNestPrivacy />} />
           <Route path="/terms" element={<GitNestTerms />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/oauth-success" element={<OAuthSuccess />} />
 
           <Route element={<ProtectedRoute />}>
