@@ -1,15 +1,15 @@
-import { createApiClient } from './createApiClient.js';
+import { createApiClient } from "./createApiClient.js";
 
 const authApi = createApiClient("/auth");
 
 export const registerUser = async (userData) => {
-  const response = await authApi.post('/register', userData);
-  return response.data.data;
+  const response = await authApi.post("/register", userData);
+  return response.data;
 };
 
 export const loginUser = async (userData) => {
-  const response = await authApi.post('/login', userData);
-  return response.data.data;
+  const response = await authApi.post("/login", userData);
+  return response.data;
 };
 
 export const getMe = async () => {
@@ -18,7 +18,7 @@ export const getMe = async () => {
 };
 
 export const updateUserProfile = async (profileData) => {
-  const response = await authApi.put('/users/profile', profileData);
+  const response = await authApi.put("/profile", profileData);
   return response.data.data;
 };
 
