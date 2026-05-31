@@ -166,7 +166,7 @@ const Register = () => {
         />
       </div>
 
-      <div className="absolute top-6 left-6 z-20">
+      <div className="absolute top-4 left-4 md:top-6 md:left-6 z-20">
         <Link
           to="/"
           className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
@@ -181,7 +181,7 @@ const Register = () => {
         </Link>
       </div>   
 
-      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-10">
+      <div className="relative z-10 min-h-screen flex items-center justify-center px-4 py-16 md:py-10">
         <div className="w-full max-w-6xl grid lg:grid-cols-2 gap-10 items-center animate-fadeIn">
           {/* LEFT */}
           <div>
