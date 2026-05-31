@@ -107,7 +107,8 @@ export const createPullRequest = asyncHandler(async (req, res) => {
 });
 
 export const updatePullRequest = asyncHandler(async (req, res) => {
-  const pullRequest = await findPullRequest(req.params.id);
+  // req.pullRequest is pre-fetched and authorization-checked by requirePullRequestAccess
+  const pullRequest = req.pullRequest || await findPullRequest(req.params.id);
   if (pullRequest.status === 'merged') throw new AppError('Merged pull requests cannot be updated', 400);
   const { status: _ignoredStatus, ...safeBody } = req.body;
   for (const key of ['title', 'description', 'sourceBranch', 'targetBranch', 'diff']) {
@@ -120,7 +121,8 @@ export const updatePullRequest = asyncHandler(async (req, res) => {
 });
 
 export const mergePullRequest = asyncHandler(async (req, res, next) => {
-  const pullRequest = await findPullRequest(req.params.id);
+  // req.pullRequest is pre-fetched and authorization-checked by requirePullRequestAccess('repoOwner')
+  const pullRequest = req.pullRequest || await findPullRequest(req.params.id);
   if (pullRequest.status !== 'open') throw new AppError('Pull request is not open', 400);
 
   const repository = await Repository.findById(pullRequest.repository._id || pullRequest.repository).select('name owner defaultBranch');
@@ -245,7 +247,8 @@ export const mergePullRequest = asyncHandler(async (req, res, next) => {
 });
 
 export const closePullRequest = asyncHandler(async (req, res) => {
-  const pullRequest = await findPullRequest(req.params.id);
+  // req.pullRequest is pre-fetched and authorization-checked by requirePullRequestAccess('author')
+  const pullRequest = req.pullRequest || await findPullRequest(req.params.id);
   if (pullRequest.status !== 'open') throw new AppError('Pull request is not open', 400);
   pullRequest.status = 'closed';
   pullRequest.closedAt = new Date();
@@ -254,7 +257,8 @@ export const closePullRequest = asyncHandler(async (req, res) => {
 });
 
 export const addPullRequestComment = asyncHandler(async (req, res) => {
-  const pullRequest = await findPullRequest(req.params.id);
+  // req.pullRequest is pre-fetched and authorization-checked by requirePullRequestAccess('readMember')
+  const pullRequest = req.pullRequest || await findPullRequest(req.params.id);
   pullRequest.comments.push({ author: req.user._id, body: req.body.body, type: req.body.type || 'general' });
   await pullRequest.save();
   const comment = pullRequest.comments[pullRequest.comments.length - 1];
@@ -263,7 +267,8 @@ export const addPullRequestComment = asyncHandler(async (req, res) => {
 });
 
 export const submitPullRequestReview = asyncHandler(async (req, res) => {
-  const pullRequest = await findPullRequest(req.params.id);
+  // req.pullRequest is pre-fetched and authorization-checked by requirePullRequestAccess('readMember')
+  const pullRequest = req.pullRequest || await findPullRequest(req.params.id);
   const statusMap = { approve: 'approved', changes_requested: 'changes_requested', comment: 'commented' };
   pullRequest.reviews.push({ author: req.user._id, status: statusMap[req.body.action], comment: req.body.comment || '' });
   await pullRequest.save();
