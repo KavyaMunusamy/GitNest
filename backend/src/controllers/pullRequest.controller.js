@@ -167,9 +167,21 @@ export const getPullRequest = asyncHandler(async (req, res) => {
 
 export const createPullRequest = asyncHandler(async (req, res) => {
   const repository = await resolveRepository(req.body.repository, req.body.repositoryId, req.body.username);
-  const lastPullRequest = await PullRequest.findOne({ repository: repository._id }).sort({ number: -1 }).select('number');
+
+  // Atomically increment the PR counter on the repository document.
+  // findOneAndUpdate with $inc is a single atomic MongoDB operation — concurrent
+  // requests can never observe the same counter value, eliminating the TOCTOU
+  // race that caused E11000 duplicate key errors on the {repository, number} index.
+  const updatedRepo = await Repository.findByIdAndUpdate(
+    repository._id,
+    { $inc: { prCount: 1 } },
+    { new: true, select: 'prCount' }
+  );
+
+  if (!updatedRepo) throw new AppError('Repository not found', 404);
+
   const pullRequest = await PullRequest.create({
-    number: (lastPullRequest?.number || 0) + 1,
+    number: updatedRepo.prCount,
     title: req.body.title,
     description: req.body.description || '',
     repository: repository._id,
@@ -178,6 +190,7 @@ export const createPullRequest = asyncHandler(async (req, res) => {
     targetBranch: req.body.targetBranch || req.body.toBranch,
     diff: req.body.diff || [],
   });
+
   sendSuccess(res, 201, serializePullRequest(await findPullRequest(pullRequest._id)), 'Pull request created successfully');
 });
 
