@@ -167,7 +167,15 @@ export const updateRepository = asyncHandler(async (req, res, next) => {
   }
 
   const { name, description, visibility, language, topics, defaultBranch } = req.body;
-  
+
+  if (name && !/^[a-zA-Z0-9._-]+$/.test(name)) {
+    return next(
+      new AppError(
+        "Repository name contains invalid characters",
+        400
+      )
+    );
+  }
   if (name && name !== repository.name) {
     const existingRepo = await Repository.findOne({
       owner: req.user.id,
