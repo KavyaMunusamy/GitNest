@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mail, Phone, MapPin, Send, Sun, Moon, Menu, X, ArrowRight } from "lucide-react";
+import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { useToastStore } from "../store/useToastStore";
 import { useThemeStore } from '../store/useThemeStore';
 import {
@@ -11,7 +11,6 @@ import {
 import { Link } from 'react-router-dom';
 import logo from "../assets/logo.png";
 import { motion, AnimatePresence } from "framer-motion";
-import logo from "../assets/logo.png";
 
 export default function ContactPage() {
 
@@ -344,86 +343,9 @@ export default function ContactPage() {
                             </form>
                         </div>
 
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <span className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-[#00dc82]/20 bg-white/60 dark:bg-white/[0.03] backdrop-blur-xl text-[#00dc82] font-medium">
-              Contact GitNest
-            </span>
-            <h1 className="mt-8 text-5xl md:text-7xl font-black leading-tight">
-              Let&apos;s Build
-              <span className="block bg-gradient-to-r from-[#00dc82] via-[#36e4da] to-[#4fd1ff] bg-clip-text text-transparent">
-                Together
-              </span>
-            </h1>
-            <p className="max-w-2xl mx-auto mt-6 text-lg text-zinc-600 dark:text-zinc-400">
-              Have questions, suggestions, or want to contribute? We&apos;d love to hear from you.
-            </p>
-          </div>
-
-          <div className="grid lg:grid-cols-2 gap-10">
-            <div className="space-y-6">
-              <div className="rounded-[32px] border border-zinc-200 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-xl p-8">
-                <Mail className="w-8 h-8 text-[#00dc82] mb-4" />
-                <h3 className="text-2xl font-bold mb-2">Email Us</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">support@gitnest.dev</p>
-              </div>
-              <div className="rounded-[32px] border border-zinc-200 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-xl p-8">
-                <Phone className="w-8 h-8 text-[#00dc82] mb-4" />
-                <h3 className="text-2xl font-bold mb-2">Call Us</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">+91 98765 43210</p>
-              </div>
-              <div className="rounded-[32px] border border-zinc-200 dark:border-white/10 bg-white/70 dark:bg-white/[0.03] backdrop-blur-xl p-8">
-                <MapPin className="w-8 h-8 text-[#00dc82] mb-4" />
-                <h3 className="text-2xl font-bold mb-2">Location</h3>
-                <p className="text-zinc-600 dark:text-zinc-400">Open Source Community Worldwide</p>
-              </div>
-            </div>
-
-            <div className="rounded-[36px] border border-zinc-200 dark:border-white/10 bg-white/70 dark:bg-[#0f131a]/80 backdrop-blur-2xl p-8 md:p-10 shadow-xl">
-              <h2 className="text-3xl font-black mb-8">Send us a message</h2>
-              <form onSubmit={handleSubmit} className="space-y-5">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Your Name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/[0.03] px-5 py-4 outline-none text-zinc-900 dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-400"
-                />
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Your Email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/[0.03] px-5 py-4 outline-none text-zinc-900 dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-400"
-                />
-                <input
-                  type="text"
-                  name="subject"
-                  placeholder="Subject"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/[0.03] px-5 py-4 outline-none text-zinc-900 dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-400"
-                />
-                <textarea
-                  rows="6"
-                  name="message"
-                  placeholder="Write your message..."
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full rounded-2xl border border-zinc-200 dark:border-white/10 bg-white dark:bg-white/[0.03] px-5 py-4 outline-none resize-none text-zinc-900 dark:text-white placeholder:text-zinc-500 dark:placeholder:text-zinc-400"
-                />
-                <button
-                  type="submit"
-                  className="group w-full py-4 rounded-2xl bg-gradient-to-r from-[#00dc82] via-[#2be4da] to-[#4fd1ff] text-black font-bold flex items-center justify-center gap-3 hover:scale-[1.02] transition-all"
-                >
-                  Send Message
-                  <Send className="w-5 h-5" />
-                </button>
-              </form>
-            </div>
-          </div>
+                    </div>
+                </div>
+            </section>
         </div>
     );
 }

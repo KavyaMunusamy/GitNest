@@ -12,7 +12,6 @@ export default function GlobalSearch() {
   const [activeType, setActiveType] = useState('all');
   const [page, setPage] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
-  const timeoutIdRef = useRef(null);
   const addToast = useToastStore((state) => state.addToast);
 
   const { data: searchResults, isLoading, isError, error } = useQuery({
