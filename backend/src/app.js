@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
 import morgan from 'morgan';
+import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import swaggerUi from 'swagger-ui-express';
 import authRoutes from './routes/auth.routes.js';
@@ -17,8 +18,10 @@ import architectureRoutes from './routes/architectureRoutes.js';
 import healthRoute from './routes/health.route.js';
 import commitHistoryRoutes from './routes/commitHistory.routes.js';
 import fileBrowserRoutes from './routes/fileBrowser.routes.js';
+import branchRoutes from './routes/branch.routes.js';
 import searchRoutes from './routes/search.routes.js';
 import codeIntelligenceRoutes from './routes/codeIntelligence.routes.js';
+import cloneRoutes from './routes/clone.routes.js';
 import errorHandler from './middleware/errorHandler.js';
 import AppError from './utils/AppError.js';
 import swaggerSpec from './config/swagger.js';
@@ -41,12 +44,6 @@ const createApp = () => {
 
   app.disable("x-powered-by");
 
-  // Trust the first reverse-proxy hop (Render, Railway, nginx, etc.) so that
-  // rate limiters and IP-based checks use the real client IP from
-  // X-Forwarded-For rather than the proxy's address. Set TRUST_PROXY=0 to
-  // disable when running without a proxy (direct Node to internet).
-  if (process.env.TRUST_PROXY !== '0') {
-    app.set('trust proxy', 1);
   if (process.env.TRUST_PROXY === "1") {
     app.set("trust proxy", 1);
   }
@@ -65,18 +62,21 @@ const createApp = () => {
     return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
   };
 
+  const sessionSecret = process.env.SESSION_SECRET || process.env.JWT_SECRET;
+
   app.use(cors(corsOptions));
   app.use(express.json({ limit: bodyLimit }));
   app.use(express.urlencoded({ extended: false, limit: bodyLimit }));
   app.use(helmet());
   app.use(mongoSanitize());
   app.use(hpp());
+  app.use(cookieParser(sessionSecret));
   app.use(requestIdMiddleware);
   app.use(attachRequestIdToResponse);
 
   app.use(
     session({
-      secret: process.env.JWT_SECRET,
+      secret: sessionSecret,
       resave: false,
       saveUninitialized: false,
     }),
@@ -125,9 +125,11 @@ const createApp = () => {
   app.use('/api/v1/pull-requests', pullRequestRoutes);
   app.use('/api/v1/repositories', commitHistoryRoutes);
   app.use('/api/v1/repositories', fileBrowserRoutes);
+  app.use('/api/v1/repositories', branchRoutes);
   app.use('/api/v1/repositories', codeIntelligenceRoutes);
   app.use('/api/v1/search', searchRoutes);
-  app.use("/api/v1/auth", githubAuthRoutes);
+  app.use('/api/v1/auth', githubAuthRoutes);
+  app.use('/api/v1/repositories', cloneRoutes);
   app.use((req, res, next) => {
     next(
       new AppError(

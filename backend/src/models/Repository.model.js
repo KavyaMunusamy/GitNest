@@ -17,6 +17,10 @@ const repositorySchema = new mongoose.Schema(
         default: '',
         trim: true,
     },
+    sourceUrl: {
+	type: String,
+	default: '',
+    },
     visibility: {
         type: String,
         enum: ['public', 'private'],
@@ -50,6 +54,10 @@ const repositorySchema = new mongoose.Schema(
     topics: {
         type: [String],
         default: [],
+    },
+    prCount: {
+        type: Number,
+        default: 0,
     },
 },
     { timestamps: true }

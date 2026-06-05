@@ -64,10 +64,11 @@ export const followUser = asyncHandler(async (req, res, next) => {
   const followSteps = [
     {
       name: 'updateTargetFollowers',
-      execute: async (context) => {
+      execute: async (context, session) => {
         const result = await User.updateOne(
           { _id: context.targetId, followers: { $ne: context.actorId } },
-          { $addToSet: { followers: context.actorId } }
+          { $addToSet: { followers: context.actorId } },
+          { session }
         );
         if (result.matchedCount === 0) {
           throw new AppError('User not found', 404);
@@ -76,28 +77,31 @@ export const followUser = asyncHandler(async (req, res, next) => {
           throw new AppError('Already following this user', 400);
         }
       },
-      compensate: async (context) => {
+      compensate: async (context, session) => {
         await User.updateOne(
           { _id: context.targetId },
-          { $pull: { followers: context.actorId } }
+          { $pull: { followers: context.actorId } },
+          { session }
         );
       }
     },
     {
       name: 'updateActorFollowing',
-      execute: async (context) => {
+      execute: async (context, session) => {
         const result = await User.updateOne(
           { _id: context.actorId, following: { $ne: context.targetId } },
-          { $addToSet: { following: context.targetId } }
+          { $addToSet: { following: context.targetId } },
+          { session }
         );
         if (result.matchedCount === 0) {
           throw new AppError('User not found', 404);
         }
       },
-      compensate: async (context) => {
+      compensate: async (context, session) => {
         await User.updateOne(
           { _id: context.actorId },
-          { $pull: { following: context.targetId } }
+          { $pull: { following: context.targetId } },
+          { session }
         );
       }
     }
@@ -151,31 +155,34 @@ export const unfollowUser = asyncHandler(async (req, res, next) => {
   const unfollowSteps = [
     {
       name: 'updateTargetFollowers',
-      execute: async (context) => {
+      execute: async (context, session) => {
         const result = await User.updateOne(
           { _id: context.targetId },
-          { $pull: { followers: context.actorId } }
+          { $pull: { followers: context.actorId } },
+          { session }
         );
         if (result.matchedCount === 0) {
           throw new AppError('User not found', 404);
         }
         context.wasFollowing = result.modifiedCount > 0;
       },
-      compensate: async (context) => {
+      compensate: async (context, session) => {
         if (context.wasFollowing) {
           await User.updateOne(
             { _id: context.targetId, followers: { $ne: context.actorId } },
-            { $addToSet: { followers: context.actorId } }
+            { $addToSet: { followers: context.actorId } },
+            { session }
           );
         }
       }
     },
     {
       name: 'updateActorFollowing',
-      execute: async (context) => {
+      execute: async (context, session) => {
         const result = await User.updateOne(
           { _id: context.actorId },
-          { $pull: { following: context.targetId } }
+          { $pull: { following: context.targetId } },
+          { session }
         );
         if (result.matchedCount === 0) {
           throw new AppError('User not found', 404);
@@ -185,11 +192,12 @@ export const unfollowUser = asyncHandler(async (req, res, next) => {
           throw new AppError('You were not following this user', 400);
         }
       },
-      compensate: async (context) => {
+      compensate: async (context, session) => {
         if (context.wasFollowed) {
           await User.updateOne(
             { _id: context.actorId, following: { $ne: context.targetId } },
-            { $addToSet: { following: context.targetId } }
+            { $addToSet: { following: context.targetId } },
+            { session }
           );
         }
       }

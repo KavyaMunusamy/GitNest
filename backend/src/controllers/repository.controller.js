@@ -177,8 +177,60 @@ export const updateRepository = asyncHandler(async (req, res, next) => {
     return next(new AppError("Repository not found", 404));
   }
 
-  const { description, visibility, language, topics, defaultBranch } = req.body;
+  const { name, description, visibility, language, topics, defaultBranch } = req.body;
 
+  if (name && !/^[a-zA-Z0-9._-]+$/.test(name)) {
+    return next(
+      new AppError(
+        "Repository name contains invalid characters",
+        400
+      )
+    );
+  }
+  if (name && name !== repository.name) {
+    const existingRepo = await Repository.findOne({
+      owner: req.user.id,
+      name,
+    });
+
+    if (existingRepo) {
+      return next(
+        new AppError(
+          "You already have a repository with this name",
+          400
+        )
+      );
+    }
+
+    const oldRepoPath = path.resolve(
+      process.cwd(),
+      "repositories",
+      req.user.id,
+      repository.name
+    );
+
+    const newRepoPath = path.resolve(
+      process.cwd(),
+      "repositories",
+      req.user.id,
+      name
+    );
+
+    try {
+      if (fs.existsSync(oldRepoPath)) {
+        fs.renameSync(oldRepoPath, newRepoPath);
+      }
+    } catch {
+      return next(
+        new AppError(
+          "Failed to rename repository storage",
+          500
+        )
+      );
+    }
+
+    repository.name = name;
+  }
   repository.description = description ?? repository.description;
 
   repository.visibility = visibility ?? repository.visibility;
@@ -408,6 +460,42 @@ export const forkRepository = asyncHandler(async (req, res, next) => {
     return next(new AppError("Failed to fork repository", 500));
   } finally {
     session.endSession();
+  }
+
+  try {
+    const originalPath = path.resolve(
+      process.cwd(),
+      "repositories",
+      original.owner.toString(),
+      original.name,
+    );
+    const forkPath = path.resolve(
+      process.cwd(),
+      "repositories",
+      req.user.id,
+      forkName,
+    );
+
+    if (fs.existsSync(originalPath)) {
+      const git = simpleGit();
+      await git.clone(originalPath, forkPath);
+    } else {
+      fs.mkdirSync(forkPath, { recursive: true });
+      const git = simpleGit(forkPath);
+      await git.init();
+      const readmePath = path.join(forkPath, "README.md");
+      fs.writeFileSync(readmePath, generateReadme(forked, req.user.username));
+      const gitignorePath = path.join(forkPath, ".gitignore");
+      fs.writeFileSync(gitignorePath, generateGitignore(forked.language));
+    }
+  } catch (error) {
+    await forked.deleteOne();
+    const ownerId = original.owner.toString();
+    await Repository.updateOne(
+      { _id: original._id },
+      { $pull: { forks: forked._id } },
+    );
+    return next(new AppError("Failed to initialize forked repository storage", 500));
   }
 
   try {

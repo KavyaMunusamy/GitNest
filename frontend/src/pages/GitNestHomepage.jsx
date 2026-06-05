@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useThemeStore } from '../store/useThemeStore';
 import {
     GitBranch,
@@ -18,6 +18,31 @@ import { Link } from 'react-router-dom';
 import logo from "../assets/logo.png";
 import { motion, AnimatePresence } from "framer-motion";
 import "../App.css";
+
+function Counter({ target, duration = 1500 }) {
+    const [count, setCount] = useState(0);
+
+    useEffect(() => {
+        let start = 0;
+
+        const increment = target / (duration / 16);
+
+        const timer = setInterval(() => {
+            start += increment;
+
+            if (start >= target) {
+                setCount(target);
+                clearInterval(timer);
+            } else {
+                setCount(Math.floor(start));
+            }
+        }, 16);
+
+        return () => clearInterval(timer);
+    }, [target, duration]);
+
+    return <>{count}</>;
+}
 
 export default function GitNestHomepage() {
     const [activeLink, setActiveLink] = useState(() => {
@@ -50,6 +75,21 @@ export default function GitNestHomepage() {
         { name: "Features", href: "#features" },
         { name: "Contributors", href: "#contributors" },
     ];
+
+    const scrollReveal = {
+        hidden: {
+            opacity: 0,
+            y: 60,
+        },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.8,
+                ease: "easeOut",
+            },
+        },
+    };
 
     return (
 
@@ -224,7 +264,14 @@ export default function GitNestHomepage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 lg:gap-24 items-center overflow-hidden">
 
                     {/* LEFT */}
-                    <div className=" ">
+                    <motion.div
+                        initial={{ opacity: 0, x: -60 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{
+                            duration: 0.8,
+                            ease: "easeOut",
+                        }}
+                    >
 
                         {/* BADGE */}
                         <div className="inline-flex items-center gap-3 px-5 py-0 rounded-full border border-[#00dc82]/10 bg-white/60 dark:bg-white/[0.03] backdrop-blur-xl text-[#1edb8c] shadow-lg mb-10">
@@ -237,7 +284,13 @@ export default function GitNestHomepage() {
                         </div>
 
                         {/* TITLE */}
-                        <h1 className="text-[42px] sm:text-[50px] leading-[1] font-black break-words">
+                        <motion.h1
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                                duration: 0.8,
+                                delay: 0.2,
+                            }} className="text-[42px] sm:text-[50px] leading-[1] font-black break-words">
 
                             <span className="block">
                                 Build the future
@@ -254,7 +307,7 @@ export default function GitNestHomepage() {
                             <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#00dc82] via-[#36e4da] to-[#4fd1ff]">
                                 coding
                             </span>
-                        </h1>
+                        </motion.h1>
 
                         {/* DESCRIPTION */}
                         <p className="text-[16px] leading-7 text-zinc-950 dark:text-zinc-300 max-w-2xl mb-5 mt-2">
@@ -327,10 +380,19 @@ export default function GitNestHomepage() {
                                 </span>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* RIGHT DASHBOARD */}
-                    <div className="relative pt-16 w-full overflow-hidden">
+                    <motion.div
+                        className="relative pt-16 w-full overflow-hidden"
+                        initial={{ opacity: 0, x: 60, scale: 0.95 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        transition={{
+                            duration: 1,
+                            delay: 0.2,
+                            ease: "easeOut",
+                        }}
+                    >
 
                         {/* ORBITAL EFFECT */}
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -404,7 +466,7 @@ export default function GitNestHomepage() {
                                                 </div>
 
                                                 <div className="text-3xl font-black mb-2">
-                                                    {item.value}
+                                                    <Counter target={Number(item.value)} />
                                                 </div>
 
                                                 <div className="text-zinc-900 text-sm">
@@ -446,7 +508,7 @@ export default function GitNestHomepage() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
 
                 {/* MARQUEE */}
@@ -464,16 +526,22 @@ export default function GitNestHomepage() {
                         ))}
                     </div>
                 </div>
-            </section>
+            </section >
 
             {/* FEATURES */}
-            <section
+            < motion.section
+
+                variants={scrollReveal}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }
+                }
                 id="features"
                 className="relative py-32 overflow-hidden border-t border-zinc-200 dark:border-white/5  bg-[#f7faf9] dark:bg-[#050816]"
             >
 
                 {/* BACKGROUND DECOR */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                < div className="absolute inset-0 overflow-hidden pointer-events-none" >
 
                     <div
                         className="absolute inset-0"
@@ -527,7 +595,7 @@ export default function GitNestHomepage() {
                             />
                         ))}
                     </div>
-                </div>
+                </div >
 
                 <div className="max-w-7xl mx-auto px-6 relative z-10">
 
@@ -596,10 +664,17 @@ export default function GitNestHomepage() {
                                 bg: "from-[#fff7f0] to-[#fffaf7]",
                                 darkBg: "dark:from-[#21140d] dark:to-[#18110e]",
                             },
-                        ].map((feature) => (
+                        ].map((feature, index) => (
 
-                            <div
+                            <motion.div
                                 key={feature.title}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{
+                                    duration: 0.6,
+                                    delay: index * 0.15,
+                                }}
                                 className={`group relative overflow-hidden rounded-[34px] border border-white/60 dark:border-white/5 bg-gradient-to-br ${feature.bg} ${feature.darkBg} backdrop-blur-xl p-8 shadow-[0_10px_40px_rgba(15,23,42,0.05)] hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(15,23,42,0.12)] transition-all duration-500`}
                             >
 
@@ -680,44 +755,50 @@ export default function GitNestHomepage() {
                                         }}
                                     />
                                 </div>
-                            </div>
+                            </motion.div>
                         ))}
                     </div>
                 </div>
-            </section>
+            </motion.section >
             {/* Contributor CTA */}
-            <section
+            < motion.section
+                variants={scrollReveal}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
                 id="contributors"
                 className="relative py-32 overflow-hidden border-t border-[#dce7e3] dark:border-white/5 bg-[#f7faf9] dark:bg-[#080b11]"
             >
 
                 {/* BACKGROUND EFFECTS */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                < div className="absolute inset-0 overflow-hidden pointer-events-none" >
 
                     {/* MAIN GLOW */}
-                    <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-r from-[#00dc82]/10 to-[#4fd1ff]/10 blur-3xl rounded-full" />
+                    < div className="absolute top-10 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-gradient-to-r from-[#00dc82]/10 to-[#4fd1ff]/10 blur-3xl rounded-full" />
 
                     {/* LEFT BLOB */}
-                    <div className="absolute left-[-120px] top-28 w-[320px] h-[320px] rounded-full bg-gradient-to-br from-[#a7f3d0]/40 to-[#d9f99d]/20 blur-2xl" />
+                    < div className="absolute left-[-120px] top-28 w-[320px] h-[320px] rounded-full bg-gradient-to-br from-[#a7f3d0]/40 to-[#d9f99d]/20 blur-2xl" />
 
                     {/* SMALL FLOATING CIRCLE */}
-                    <div className="absolute left-[14%] bottom-24 w-14 h-14 rounded-full bg-gradient-to-br from-[#d9f99d]/70 to-[#bef264]/40 blur-sm border border-white/40" />
+                    < div className="absolute left-[14%] bottom-24 w-14 h-14 rounded-full bg-gradient-to-br from-[#d9f99d]/70 to-[#bef264]/40 blur-sm border border-white/40" />
 
                     {/* RIGHT CODE ICON GLOW */}
-                    <div className="absolute right-[8%] top-[26%] w-[260px] h-[260px] rounded-full bg-gradient-to-br from-[#00dc82]/20 to-[#fde047]/20 blur-3xl" />
+                    < div className="absolute right-[8%] top-[26%] w-[260px] h-[260px] rounded-full bg-gradient-to-br from-[#00dc82]/20 to-[#fde047]/20 blur-3xl" />
 
                     {/* DOT GRID */}
-                    <div className="absolute top-16 right-[12%] grid grid-cols-5 gap-5 opacity-20">
-                        {Array.from({ length: 25 }).map((_, i) => (
-                            <div
-                                key={i}
-                                className="w-1.5 h-1.5 rounded-full bg-[#00dc82]"
-                            />
-                        ))}
-                    </div>
+                    < div className="absolute top-16 right-[12%] grid grid-cols-5 gap-5 opacity-20" >
+                        {
+                            Array.from({ length: 25 }).map((_, i) => (
+                                <div
+                                    key={i}
+                                    className="w-1.5 h-1.5 rounded-full bg-[#00dc82]"
+                                />
+                            ))
+                        }
+                    </div >
 
                     {/* LEFT CURVE */}
-                    <svg
+                    < svg
                         className="absolute left-0 bottom-10 opacity-30"
                         width="420"
                         height="180"
@@ -736,10 +817,10 @@ export default function GitNestHomepage() {
                                 <stop offset="1" stopColor="#00dc82" />
                             </linearGradient>
                         </defs>
-                    </svg>
+                    </svg >
 
                     {/* RIGHT CURVE */}
-                    <svg
+                    < svg
                         className="absolute right-0 top-36 opacity-30"
                         width="420"
                         height="220"
@@ -758,8 +839,8 @@ export default function GitNestHomepage() {
                                 <stop offset="1" stopColor="#00dc82" />
                             </linearGradient>
                         </defs>
-                    </svg>
-                </div>
+                    </svg >
+                </div >
 
                 <div className="max-w-7xl mx-auto px-6 relative z-10">
 
@@ -781,7 +862,13 @@ export default function GitNestHomepage() {
                         </div>
 
                         {/* TOP BADGE */}
-                        <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-[#00dc82]/20 bg-white/70 dark:bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_30px_rgba(0,220,130,0.06)] mb-10">
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{
+                                duration: 0.5,
+                                delay: 0.1,
+                            }} className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-[#00dc82]/20 bg-white/70 dark:bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_30px_rgba(0,220,130,0.06)] mb-10">
 
                             <Users className="w-5 h-5 text-[#00dc82]" />
 
@@ -789,7 +876,7 @@ export default function GitNestHomepage() {
                                 Open Source Collaboration
                             </span>
 
-                        </div>
+                        </motion.div>
 
                         {/* TITLE */}
                         <h2 className="text-[52px] md:text-[82px] leading-[0.95] tracking-[-0.06em] font-black text-[#07111b] dark:text-white mb-8">
@@ -840,23 +927,28 @@ export default function GitNestHomepage() {
                         </div>
                     </div>
                 </div>
-            </section>
+            </motion.section >
 
             {/* Footer */}
-            <footer className="relative overflow-hidden border-t border-[#dce7e3] bg-[#f8fbfa] dark:bg-[#080b11] py-14">
+            < motion.footer
+                variants={scrollReveal}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                className="relative overflow-hidden border-t border-[#dce7e3] bg-[#f8fbfa] dark:bg-[#080b11] py-14" >
 
                 {/* BACKGROUND EFFECTS */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                < div className="absolute inset-0 overflow-hidden pointer-events-none" >
 
                     {/* TOP GRADIENT */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[220px] bg-gradient-to-r from-[#00dc82]/10 via-[#4fd1ff]/10 to-[#d9f99d]/10 blur-3xl rounded-full" />
+                    < div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[220px] bg-gradient-to-r from-[#00dc82]/10 via-[#4fd1ff]/10 to-[#d9f99d]/10 blur-3xl rounded-full" />
 
                     {/* LEFT GLOW */}
-                    <div className="absolute left-[-80px] bottom-0 w-[240px] h-60 bg-[#4fd1ff]/10 blur-3xl rounded-full" />
+                    < div className="absolute left-[-80px] bottom-0 w-[240px] h-60 bg-[#4fd1ff]/10 blur-3xl rounded-full" />
 
                     {/* RIGHT GLOW */}
-                    <div className="absolute right-[-80px] top-0 w-[240px] h-60 bg-[#00dc82]/10 blur-3xl rounded-full" />
-                </div>
+                    < div className="absolute right-[-80px] top-0 w-[240px] h-60 bg-[#00dc82]/10 blur-3xl rounded-full" />
+                </div >
 
                 <div className="relative z-10 max-w-7xl mx-auto px-6">
 
@@ -1016,8 +1108,8 @@ export default function GitNestHomepage() {
                     </div>
                 </div>
 
-            </footer>
-        </div>
+            </motion.footer >
+        </div >
 
     );
 };
