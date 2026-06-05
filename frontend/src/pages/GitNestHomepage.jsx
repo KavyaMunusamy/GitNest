@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useThemeStore } from '../store/useThemeStore';
 import {
     GitBranch,
@@ -14,12 +14,34 @@ import {
     Shield,
     Menu, 
     X,
-    Copy // <-- Added Copy import
+    Copy 
 } from "lucide-react";
 import { Link } from 'react-router-dom';
 import logo from "../assets/logo.png";
 import { motion, AnimatePresence } from "framer-motion";
 import "../App.css";
+
+
+function Counter({ target, duration = 1500 }) {
+    const [count, setCount] = useState(0);
+
+    useEffect(() => {
+        let start = 0;
+        const increment = target / (duration / 16);
+        const timer = setInterval(() => {
+            start += increment;
+            if (start >= target) {
+                setCount(target);
+                clearInterval(timer);
+            } else {
+                setCount(Math.floor(start));
+            }
+        }, 16);
+        return () => clearInterval(timer);
+    }, [target, duration]);
+
+    return <>{count}</>;
+}
 
 export default function GitNestHomepage() {
     const [activeLink, setActiveLink] = useState(() => {
@@ -67,7 +89,6 @@ export default function GitNestHomepage() {
         },
     };
 
-    // <-- Added Clipboard Logic
     const handleCopyUrl = async () => {
         const repoUrl = `${window.location.origin}/Ankita15k/gitnest-core`;
         
@@ -423,7 +444,7 @@ export default function GitNestHomepage() {
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
 
                                         <div>
-                                            {/* <-- ADDED COPY BUTTON SECTION */}
+                                            {/* COPY BUTTON SECTION */}
                                             <div className="flex items-center gap-3 mb-1">
                                                 <h3 className="text-2xl font-black">
                                                     gitnest-core
@@ -436,7 +457,6 @@ export default function GitNestHomepage() {
                                                     <Copy className="w-4 h-4" />
                                                 </button>
                                             </div>
-                                            {/* END COPY BUTTON SECTION --> */}
 
                                             <p className="text-zinc-500 leading-7">
                                                 GitHub-inspired repository management with pull requests, issues, branching, and AI-powered workflows.
@@ -465,7 +485,7 @@ export default function GitNestHomepage() {
                                                 </div>
 
                                                 <div className="text-3xl font-black mb-2">
-                                                    {item.value}
+                                                    <Counter target={Number(item.value)} /> {/* <-- Restored the animated counter logic */}
                                                 </div>
 
                                                 <div className="text-zinc-900 text-sm">
@@ -1070,7 +1090,6 @@ export default function GitNestHomepage() {
                                 Tech Stack
                             </h4>
 
-                            {/* <div className="flex flex-wrap gap-4 items-start"> */}
                             <div className="grid grid-cols-2 gap-4 ">
                                 {[
                                     "React",
