@@ -122,7 +122,11 @@ export const getRepository = asyncHandler(async (req, res, next) => {
     return next(new AppError("Repository not found", 404));
   }
 
-  sendSuccess(res, 200, repository);
+  sendSuccess(res, 200, {
+      ...repository.toObject(),
+      starsCount: repository.stars?.length || 0,
+      forksCount: repository.forks?.length || 0,
+  });
 });
 
 export const getUserRepositories = asyncHandler(async (req, res, next) => {
@@ -151,11 +155,16 @@ export const getUserRepositories = asyncHandler(async (req, res, next) => {
 
     Repository.countDocuments(filter),
   ]);
+  const repositoriesWithCounts = repositories.map((repo) => ({
+    ...repo.toObject(),
+    starsCount: repo.stars?.length || 0,
+    forksCount: repo.forks?.length || 0
+  }));
 
   const pagination = buildPaginationMeta(page, limit, totalCount);
 
   sendSuccess(res, 200, {
-    repositories,
+    repositories: repositoriesWithCounts,
     pagination,
   });
 });

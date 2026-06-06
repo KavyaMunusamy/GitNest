@@ -173,11 +173,14 @@ const UserProfileContent = ({ username }) => {
                       <h3 className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:underline cursor-pointer">
                         {repo?.name || 'Unknown Repository'}
                       </h3>
-                      {repo?.stars > 0 && (
-                        <span className="text-xs text-zinc-500 dark:text-zinc-400 flex items-center gap-0.5 shrink-0">
-                          ★ {repo.stars}
+                      <div className="flex gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+                        <span>
+                            ⭐ {repo.starsCount || repo.stars?.length || 0}
                         </span>
-                      )}
+                        <span>
+                          🍴 {repo.forksCount || repo.forks?.length || 0}
+                        </span>
+                      </div>
                     </div>
                     {repo?.description && (
                       <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">
